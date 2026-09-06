@@ -1,93 +1,54 @@
-# ============================================================
-# 1. IMAGEN BASE
-# ============================================================
-
-# Node.js 22 sobre Debian Bookworm.
-# Usamos Debian en lugar de Alpine porque necesitaremos
-# instalar Python y posteriormente ODA para Linux.
+# Imagen base: Node.js 22 + Debian Bookworm
 FROM node:22-bookworm
 
-
-# ============================================================
-# 2. DIRECTORIO DE TRABAJO
-# ============================================================
-
-# Todos los archivos de nuestra aplicación estarán aquí.
+# Directorio de trabajo de la aplicación
 WORKDIR /app
 
-
-# ============================================================
-# 3. INSTALAR PYTHON
-# ============================================================
-
-# Instalamos Python 3 y pip.
+# Instalar Python 3 y pip
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         python3 \
         python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-
-# ============================================================
-# 4. DEPENDENCIAS DE NODE.JS
-# ============================================================
-
-# Copiamos primero los archivos de dependencias.
-# Esto permite que Docker aproveche su caché.
+# Copiar dependencias de Node
 COPY package*.json ./
 
-
-# Instalamos exactamente las dependencias de package-lock.json.
+# Instalar dependencias de Node
 RUN npm ci
 
-
-# ============================================================
-# 5. DEPENDENCIAS DE PYTHON
-# ============================================================
-
-# Copiamos el archivo de dependencias Python.
+# Copiar dependencias de Python
 COPY python/requirements.txt ./python/requirements.txt
 
-
-# Instalamos ezdxf y las demás dependencias Python.
-RUN pip3 install --no-cache-dir \
+# Instalar dependencias Python
+RUN pip3 install \
+    --no-cache-dir \
     --break-system-packages \
     -r ./python/requirements.txt
 
+# Crear directorio para ODA
+RUN mkdir -p /opt/oda
 
-# ============================================================
-# 6. COPIAR EL CÓDIGO DE LA APLICACIÓN
-# ============================================================
+# Copiar instalador ODA
+COPY ODAFileConverter_QT6_lnxX64_8.3dll_27.1.deb /tmp/oda.deb
 
-# Copiamos el resto del proyecto dentro del contenedor.
+# Instalar ODA y limpiar instalador
+RUN apt-get update \
+    && apt-get install -y /tmp/oda.deb \
+    && rm /tmp/oda.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar el código del backend
 COPY . .
 
+# Ruta del ejecutable ODA
+ENV ODA_EXE=/usr/bin/ODAFileConverter
 
-# ============================================================
-# 7. CONFIGURACIÓN DE ODA
-# ============================================================
-
-# Ruta donde posteriormente instalaremos ODA File Converter.
-ENV ODA_EXE=/opt/oda/ODAFileConverter
-
-
-# ============================================================
-# 8. CONFIGURACIÓN DE PYTHON
-# ============================================================
-
-# Node ejecutará Python 3 dentro del contenedor.
+# Comando para ejecutar Python
 ENV PYTHON_COMMAND=python3
 
-
-# ============================================================
-# 9. PUERTO DE LA API
-# ============================================================
-
+# Puerto del backend
 EXPOSE 3000
 
-
-# ============================================================
-# 10. INICIAR BACKEND
-# ============================================================
-
+# Iniciar API
 CMD ["node", "app.js"]
