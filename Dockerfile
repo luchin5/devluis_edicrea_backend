@@ -54,12 +54,13 @@ COPY . .
 
 # Ruta del ejecutable ODA
 ENV ODA_EXE=/usr/bin/ODAFileConverter
-
-# Comando para ejecutar Python
 ENV PYTHON_COMMAND=python3
+ENV DISPLAY=:99
+ENV XDG_RUNTIME_DIR=/tmp/runtime-root
 
-# Puerto del backend
+RUN mkdir -p /tmp/runtime-root \
+    && chmod 700 /tmp/runtime-root
+
 EXPOSE 3000
 
-# Iniciar API
-CMD ["node", "app.js"]
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 >/tmp/xvfb.log 2>&1 & sleep 1; exec node app.js"]
