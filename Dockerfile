@@ -11,6 +11,7 @@ RUN apt-get update \
         python3-pip \
         libgl1 \
         libxkbcommon0 \
+        libxcb-xinerama0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar dependencias de Node
