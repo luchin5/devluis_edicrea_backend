@@ -9,6 +9,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         python3 \
         python3-pip \
+        libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar dependencias de Node
