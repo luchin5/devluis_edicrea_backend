@@ -19,6 +19,7 @@ RUN apt-get update \
         libxcb-render-util0 \
         libxcb-shape0 \
         libxcb-xkb1 \
+        xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar dependencias de Node
