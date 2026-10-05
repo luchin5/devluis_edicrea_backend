@@ -6,7 +6,7 @@ function ejecutarPython(script, argumentos = []) {
     return new Promise((resolve, reject) => {
 
         const proceso = spawn(
-            "python",
+            process.env.PYTHON_COMMAND || "python",
             [
                 script,
                 ...argumentos

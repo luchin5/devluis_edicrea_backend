@@ -6,7 +6,10 @@ dotenv.config();
 const pgp = pgPromise();
 
 const db = pgp({
-    connectionString: process.env.DB_URL
+    connectionString: process.env.DB_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 // Verificar la conexión

@@ -4,14 +4,14 @@ import subprocess
 from pathlib import Path
 import re
 import ezdxf
-
+import os
 
 # ============================================================
 # CONFIGURACIÓN
 # ============================================================
 
-ODA_EXE = r"C:\Program Files\ODA\ODAFileConverter 27.1.0\ODAFileConverter.exe"
-
+#ODA_EXE = r"C:\Program Files\ODA\ODAFileConverter 27.1.0\ODAFileConverter.exe"
+ODA_EXE = os.getenv("ODA_EXE","/opt/oda/ODAFileConverter")
 CAPA_LOTES = "C2_LOTE"
 
 
